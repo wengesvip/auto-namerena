@@ -15,7 +15,7 @@ uniform_int_distribution<int> dididididi(0,2147483647);
 
 HANDLE h_out=GetStdHandle(STD_OUTPUT_HANDLE);
 
-enum colors{
+enum colors {
 	fg_black			= 0x00,
 	fg_dark_blue		= 0x01,
 	fg_dark_green		= 0x02,
@@ -50,549 +50,452 @@ enum colors{
 	bg_light_white		= 0xf0
 };
 
-template <typename T> inline void fmtPrint(T sth,colors color){
+template <typename T> inline void fmtPrint(T sth,colors color) {
 	int color1=color;
 	SetConsoleTextAttribute(h_out,color1);
 	cout<<sth;
 	SetConsoleTextAttribute(h_out,0x0f);
 }
-template <typename T> inline void fmtPrint(initializer_list<T> sth,colors color){
+template <typename T> inline void fmtPrint(initializer_list<T> sth,colors color) {
 	int color1=color;
 	SetConsoleTextAttribute(h_out,color1);
 	for(auto i:sth)cout<<i;
 	SetConsoleTextAttribute(h_out,0x0f);
 }
-inline void fmtTypewriter(string s,colors color){
+inline void fmtTypewriter(string s,colors color) {
 	int color1=color;
 	SetConsoleTextAttribute(h_out,color1);
-	for(int i=0;i<s.size();i++)
+	for(int i=0; i<s.size(); i++)
 		cout<<s[i],Sleep(7);
 	SetConsoleTextAttribute(h_out,0x0f);
 }
 /////////////////////////////////////////////////
 //hide text cursor
-void hideCursor(){
-	CONSOLE_CURSOR_INFO cursor_info={1,0};
+void hideCursor() {
+	CONSOLE_CURSOR_INFO cursor_info= {1,0};
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&cursor_info);
 }
 /////////////////////////////////////////////////
 //string replace
-void stringReplace(string& s,string t,string w){
+void stringReplace(string& s,string t,string w) {
 	int i=0,l1=t.size(),l2=w.size();
 	while((i=s.find(t,i))!=string::npos)s.replace(s.find(t),l1,w),i+=l2;
 }
 /////////////////////////////////////////////////
 //keyboard hook
 #define KEY_DOWN(VK_NONAME) ((GetAsyncKeyState(VK_NONAME) & 0x8000) ? 1:0)
-class keybd{
+
+#define clr(x) memset(x,0,sizeof(x));
+
+class keybd {
 	private:
-	const static int delay=10;
-	unordered_map<string,int> keys={
-		{"MouseLeft",VK_LBUTTON},{"MouseRight",VK_RBUTTON},{"MouseMiddle",VK_MBUTTON},{"BackSpace",VK_BACK},{"Tab",VK_TAB},{"Enter",VK_RETURN},
-		{"Shift",VK_SHIFT},{"Ctrl",VK_CONTROL},{"Alt",VK_MENU},{"Esc",VK_ESCAPE},{"Space",VK_SPACE},{"Left",VK_LEFT},{"Up",VK_UP},
-		{"Right",VK_RIGHT},{"Down",VK_DOWN},
-		{"A",'A'},{"B",'B'},{"C",'C'},{"D",'D'},{"E",'E'},{"F",'F'},{"G",'G'},{"H",'H'},{"I",'I'},{"J",'J'},{"K",'K'},{"L",'L'},{"M",'M'},{"N",'N'},
-		{"O",'O'},{"P",'P'},{"Q",'Q'},{"R",'R'},{"S",'S'},{"T",'T'},{"U",'U'},{"V",'V'},{"W",'W'},{"X",'X'},{"Y",'Y'},{"Z",'Z'},{"0",'0'},{"1",'1'},
-		{"2",'2'},{"3",'3'},{"4",'4'},{"5",'5'},{"6",'6'},{"7",'7'},{"8",'8'},{"9",'9'},
-		{";",VK_OEM_1},{"/",VK_OEM_2},{"`",VK_OEM_3},{"[",VK_OEM_4},{"\\",VK_OEM_5},{"]",VK_OEM_6},{"\'",VK_OEM_7},{"=",VK_OEM_PLUS},
-		{",",VK_OEM_COMMA},{"-",VK_OEM_MINUS},{".",VK_OEM_PERIOD}
-	};
+		const static int delay=10;
+		unordered_map<string,int> keys= {
+			{"MouseLeft",VK_LBUTTON},{"MouseRight",VK_RBUTTON},{"MouseMiddle",VK_MBUTTON},{"BackSpace",VK_BACK},{"Tab",VK_TAB},{"Enter",VK_RETURN},
+			{"Shift",VK_SHIFT},{"Ctrl",VK_CONTROL},{"Alt",VK_MENU},{"Esc",VK_ESCAPE},{"Space",VK_SPACE},{"Left",VK_LEFT},{"Up",VK_UP},
+			{"Right",VK_RIGHT},{"Down",VK_DOWN},
+			{"A",'A'},{"B",'B'},{"C",'C'},{"D",'D'},{"E",'E'},{"F",'F'},{"G",'G'},{"H",'H'},{"I",'I'},{"J",'J'},{"K",'K'},{"L",'L'},{"M",'M'},{"N",'N'},
+			{"O",'O'},{"P",'P'},{"Q",'Q'},{"R",'R'},{"S",'S'},{"T",'T'},{"U",'U'},{"V",'V'},{"W",'W'},{"X",'X'},{"Y",'Y'},{"Z",'Z'},{"0",'0'},{"1",'1'},
+			{"2",'2'},{"3",'3'},{"4",'4'},{"5",'5'},{"6",'6'},{"7",'7'},{"8",'8'},{"9",'9'},
+			{";",VK_OEM_1},{"/",VK_OEM_2},{"`",VK_OEM_3},{"[",VK_OEM_4},{"\\",VK_OEM_5},{"]",VK_OEM_6},{"\'",VK_OEM_7},{"=",VK_OEM_PLUS},
+			{",",VK_OEM_COMMA},{"-",VK_OEM_MINUS},{".",VK_OEM_PERIOD}
+		};
 	public:
-	void pressKey(int k){
-		keybd_event(k,0,0,0);
-		Sleep(delay);
-		keybd_event(k,0,KEYEVENTF_KEYUP,0);
-		Sleep(delay);
-	}
-	bool pressKey(string s){
-		int k=keys[s];
-		if(k!=0){
-			pressKey(k);
-			return true;
-		}
-		return false;
-	}
-	void pressKey(initializer_list<string> il){
-	    for(auto i:il){
-	        pressKey(i);
-	    }
-	}
-	void pressKeyCombo(initializer_list<string> il){
-	    for(auto i:il){
-	    	int k=keys[i];
-	    	if(k==0)continue;
-	        keybd_event(k,0,0,0);
+		void pressKey(int k) {
+			keybd_event(k,0,0,0);
 			Sleep(delay);
-	    }
-	    for(auto i:il){
-	    	int k=keys[i];
-	    	if(k==0)continue;
 			keybd_event(k,0,KEYEVENTF_KEYUP,0);
 			Sleep(delay);
 		}
-	}
-	bool keyDown(int k){
-		if(KEY_DOWN(k))return true;
-		return false;
-	}
-};
+		bool pressKey(string s) {
+			int k=keys[s];
+			if(k!=0) {
+				pressKey(k);
+				return true;
+			}
+			return false;
+		}
+		void pressKey(initializer_list<string> il) {
+			for(auto i:il) {
+				pressKey(i);
+			}
+		}
+		void pressKeyCombo(initializer_list<string> il) {
+			for(auto i:il) {
+				int k=keys[i];
+				if(k==0)continue;
+				keybd_event(k,0,0,0);
+				Sleep(delay);
+			}
+			for(auto i:il) {
+				int k=keys[i];
+				if(k==0)continue;
+				keybd_event(k,0,KEYEVENTF_KEYUP,0);
+				Sleep(delay);
+			}
+		}
+		bool keyDown(int k) {
+			if(KEY_DOWN(k))return true;
+			return false;
+		}
+}K;
 
-class mouse{
+class mouse {
 	private:
-	POINT pos;
+		POINT pos;
 	public:
-	void leftClick(){
-		mouse_event(MOUSEEVENTF_LEFTDOWN,0,0,0,0);
-		Sleep(1);
-		mouse_event(MOUSEEVENTF_LEFTUP,0,0,0,0);  
-	}
-	void rightClick(){
-		mouse_event(MOUSEEVENTF_RIGHTDOWN,0,0,0,0);
-		Sleep(1);
-		mouse_event(MOUSEEVENTF_RIGHTUP,0,0,0,0);  
-	}
-	void setPos(int x,int y){
-		SetCursorPos(x,y);
-	}
-	void setPos(POINT p){
-		SetCursorPos(p.x,p.y);
-	}
-	void updatePos(){
-		GetCursorPos(&pos);
-	}
-	int getX(){
-		updatePos();
-		return pos.x;
-	}
-	int getY(){
-		updatePos();
-		return pos.y;
-	}
-};
+		void leftClick() {
+			mouse_event(MOUSEEVENTF_LEFTDOWN,0,0,0,0);
+			Sleep(1);
+			mouse_event(MOUSEEVENTF_LEFTUP,0,0,0,0);
+		}
+		void rightClick() {
+			mouse_event(MOUSEEVENTF_RIGHTDOWN,0,0,0,0);
+			Sleep(1);
+			mouse_event(MOUSEEVENTF_RIGHTUP,0,0,0,0);
+		}
+		void setPos(int x,int y) {
+			SetCursorPos(x,y);
+		}
+		void setPos(POINT p) {
+			SetCursorPos(p.x,p.y);
+		}
+		void updatePos() {
+			GetCursorPos(&pos);
+		}
+		int getX() {
+			updatePos();
+			return pos.x;
+		}
+		int getY() {
+			updatePos();
+			return pos.y;
+		}
+}M;
 
-string code_skill[35]={
-	"连击","会心一击","火球术","冰冻术","雷击术","地裂术","吸血攻击","狂暴术","诅咒","净化","投毒","潜行","背刺","瘟疫",
-	"生命之轮","聚气","蓄力","魅惑","加速术","减速术","铁壁","治愈魔法","苏生术","血祭","幻术","分身","反击","防御","伤害反弹","守护",
-	"护身符","垂死","召唤亡灵","吞噬","回避"
-};
-unordered_map<string,int> skill_code={
-	{"连击",0},{"会心一击",1},{"火球术",2},{"冰冻术",3},{"雷击术",4},{"地裂术",5},{"吸血攻击",6},
-	{"狂暴术",7},{"诅咒",8},{"净化",9},{"投毒",10},{"潜行",11},{"背刺",12},{"瘟疫",13},{"生命之轮",14},{"聚气",15},{"蓄力",16},{"魅惑",17},
-	{"加速术",18},{"减速术",19},{"铁壁",20},{"治愈魔法",21},{"苏生术",22},{"血祭",23},{"幻术",24},{"分身",25},{"反击",26},{"防御",27},
-	{"伤害反弹",28},{"守护",29},{"护身符",30},{"垂死",31},{"召唤亡灵",32},{"吞噬",33},{"回避",34}
-};
+constexpr int D=46;
 
-struct Name{
+string code_detail[D]= {
+	"粗评","八围","HP","攻","防","速","敏","魔","抗","智","连击","会心一击","火球术","冰冻术","雷击术","地裂术","吸血攻击","狂暴术",
+	"诅咒","净化","投毒","潜行","背刺","瘟疫","生命之轮","聚气","蓄力","魅惑","加速术","减速术","铁壁","治愈魔法","苏生术","血祭",
+	"幻术","分身","反击","防御","伤害反弹","守护","护身符","垂死","召唤亡灵","吞噬","回避","天守评分（暂未支持）"
+};
+string code_detail_2[D]= {
+	"粗评","八围","HP","攻","防","速","敏","魔","抗","智","连击,","会心一击,","火球术,","冰冻术,","雷击术,","地裂术,","吸血攻击,","狂暴术,",
+	"诅咒,","净化,","投毒,","潜行,","背刺,","瘟疫,","生命之轮,","聚气,","蓄力,","魅惑,","加速术,","减速术,","铁壁,","治愈魔法,","苏生术,","血祭,",
+	"幻术,","分身,","反击,","防御,","伤害反弹,","守护,","护身符,","垂死,","召唤亡灵,","吞噬,","回避,","天守评分（暂未支持）"
+};
+unordered_map<string,int> detail_code= {
+	{"粗评",0},{"八围",1},{"HP",2},{"攻",3},{"防",4},{"速",5},{"敏",6},{"魔",7},{"抗",8},{"智",9},{"连击",10},{"会心一击",11},
+	{"火球术",12},{"冰冻术",13},{"雷击术",14},{"地裂术",15},{"吸血攻击",16},{"狂暴术",17},{"诅咒",18},{"净化",19},{"投毒",20},
+	{"潜行",21},{"背刺",22},{"瘟疫",23},{"生命之轮",24},{"聚气",25},{"蓄力",26},{"魅惑",27},{"加速术",28},{"减速术",29},
+	{"铁壁",30},{"治愈魔法",31},{"苏生术",32},{"血祭",33},{"幻术",34},{"分身",35},{"反击",36},{"防御",37},{"伤害反弹",38},
+	{"守护",39},{"护身符",40},{"垂死",41},{"召唤亡灵",42},{"吞噬",43},{"回避",44},{"天守评分（暂未支持）",45}
+};
+struct detail {
+	detail() {}
 	string name;
-	int detail[8]={0};
-	int score=-1;
-	double skill[35]={0};
-	inline int getSeven(){
-		return detail[1]+detail[2]+detail[3]+detail[4]+detail[5]+detail[6]+detail[7];
+	bool is_tested=false; 
+	double d[D]= {0};
+	inline double getEight() {
+		return d[1]=d[3]+d[4]+d[5]+d[6]+d[7]+d[8]+d[9]+(d[2]/3.0);
 	}
-	inline double getEight(){
-		return getSeven()+detail[0]/3.0;
+	double& operator [](int i) {
+		return d[i];
 	}
-	inline int getLevel(){
-		double e=getEight();
-		if(e>=692)return 3;
-		else if(e>=672)return 2;
-		else if(e>=652)return 1;
-		else return 0;
-	}
-	inline double hiSkill(){
-		double m=0;
-		for(int i=0;i<35;i++){
-			m=max(m,skill[i]);
-		}
-		return m;
-	}
-	inline string hiSkillName(){
-		double m=0;
-		string s;
-		for(int i=0;i<35;i++){
-			if(skill[i]>m){
-				m=skill[i];
-				s=code_skill[i];
-			}
-		}
-		return s;
-	}
-	inline double spSkill(int x){
-		return skill[x];
-	}
-	Name(){}
+	/*
+	detail& operator =(detail &y) {
+		this->name=y.name;
+		this->is_tested=y.is_tested;
+		for(int i=0; i<D; i++)this->d[i]=y[i];
+		return *this;
+	}*/
 };
 
-int cmpByScore(Name x,Name y){
-	return x.score>y.score;
+char* unicode2Utf8(const char* unicode) {
+	int len;
+	len=WideCharToMultiByte(CP_UTF8,0,(const wchar_t*)unicode,-1,NULL,0,NULL,NULL);
+	char *szUtf8=(char*)malloc(len+1);
+	memset(szUtf8,0,len+1);
+	WideCharToMultiByte(CP_UTF8,0,(const wchar_t*)unicode,-1,szUtf8,len,NULL,NULL);
+	return szUtf8;
 }
-int cmpByEight(Name x,Name y){
-	return x.getEight()>y.getEight();
+char* ansi2Unicode(const char* str) {
+	int dwUnicodeLen=MultiByteToWideChar(CP_ACP,0,str,-1,NULL,0);
+	if(!dwUnicodeLen) {
+		return strdup(str);
+	}
+	size_t num=dwUnicodeLen*sizeof(wchar_t);
+	wchar_t *pwText=(wchar_t*)malloc(num);
+	memset(pwText,0,num);
+	MultiByteToWideChar(CP_ACP,0,str,-1,pwText,dwUnicodeLen);
+	return (char*)pwText;
 }
-int cmpByHiSkill(Name x,Name y){
-	return x.hiSkill()>y.hiSkill();
+char* ansi2Utf8(const char* str) {
+	char* unicode=ansi2Unicode(str);
+	char* utf8=unicode2Utf8(unicode);
+	free(unicode);
+	return utf8;
 }
 
-	char* unicode2Utf8(const char* unicode){
-		int len;
-		len=WideCharToMultiByte(CP_UTF8,0,(const wchar_t*)unicode,-1,NULL,0,NULL,NULL);
-		char *szUtf8=(char*)malloc(len+1);
-		memset(szUtf8,0,len+1);
-		WideCharToMultiByte(CP_UTF8,0,(const wchar_t*)unicode,-1,szUtf8,len,NULL,NULL);
-		return szUtf8;
+int window_count=4;
+POINT wpos[10];//window-pos
+POINT tpos[10];//text-pos
+
+void getPos(int k) {
+	cout<<"窗口 "<<k<<": 请定位你的鼠标到窗口右上方，按空格键确定\n";
+	while(1) {
+		if(KEY_DOWN(VK_SPACE)) {
+			while(KEY_DOWN(VK_SPACE))Sleep(10);
+			break;
+		}
+		Sleep(10);
 	}
-	char* ansi2Unicode(const char* str){
-		int dwUnicodeLen=MultiByteToWideChar(CP_ACP,0,str,-1,NULL,0);
-		if(!dwUnicodeLen){
-			return strdup(str);
+	cout<<"窗口 "<<k<<": x="<<(wpos[k].x=M.getX())<<", y="<<(wpos[k].y=M.getY())<<"\n";
+	cout<<"窗口 "<<k<<": 请定位你的鼠标到窗口正中，按空格键确定\n";
+	while(1) {
+		if(KEY_DOWN(VK_SPACE)) {
+			while(KEY_DOWN(VK_SPACE))Sleep(10);
+			break;
 		}
-		size_t num=dwUnicodeLen*sizeof(wchar_t);
-		wchar_t *pwText=(wchar_t*)malloc(num);
-		memset(pwText,0,num);
-		MultiByteToWideChar(CP_ACP,0,str,-1,pwText,dwUnicodeLen);
-		return (char*)pwText;}
-	char* ansi2Utf8(const char* str){
-		char* unicode=ansi2Unicode(str); 
-		char* utf8=unicode2Utf8(unicode);
-		free(unicode);
-		return utf8;
+		Sleep(10);
 	}
-	
-	///////////////////////////////to
-	
-	mouse M;
-	keybd K;
-	
-	int window_count=4;
-	POINT wpos[10];//window-pos
-	POINT tpos[10];//text-pos
-	int phase[10]={0};
-	
-	void getPos(int k){
-		cout<<"窗口 "<<k<<": 请定位你的鼠标到窗口右上方，按空格键确定\n";
-		while(1){
-			if(KEY_DOWN(VK_SPACE)){
-				while(KEY_DOWN(VK_SPACE))Sleep(10);
-				break;
+	cout<<"窗口 "<<k<<": x="<<(tpos[k].x=M.getX())<<", y="<<(tpos[k].y=M.getY())
+	    <<"\n窗口 "<<k<<" 设置成功\n";
+}
+void updatePos(bool force_new=false) {
+	int size=window_count;
+	ifstream in("window.txt");
+	if(force_new||(!in.is_open())) {
+		if(!force_new)cout<<"找不到窗口位置配置或者读取失败，请重新录入\n";
+		for(int i=1; i<=size; i++)getPos(i);
+		cout<<"录入成功\n";
+		ofstream out("window.txt");
+		if(out.is_open()) {
+			for(int i=1; i<=size; i++) {
+				out<<wpos[i].x<<" "<<wpos[i].y<<" "<<tpos[i].x<<" "<<tpos[i].y<<"\n";
 			}
-			Sleep(10);
+			cout<<"保存成功\n";
+		} else cout<<"ERROR:保存失败\n";
+	} else {
+		for(int i=1; i<=size; i++) {
+			in>>wpos[i].x>>wpos[i].y>>tpos[i].x>>tpos[i].y;
 		}
-		cout<<"窗口 "<<k<<": x="<<(wpos[k].x=M.getX())<<", y="<<(wpos[k].y=M.getY())<<"\n";
-		cout<<"窗口 "<<k<<": 请定位你的鼠标到窗口正中，按空格键确定\n";
-		while(1){
-			if(KEY_DOWN(VK_SPACE)){
-				while(KEY_DOWN(VK_SPACE))Sleep(10);
-				break;
-			}
-			Sleep(10);
-		}
-		cout<<"窗口 "<<k<<": x="<<(tpos[k].x=M.getX())<<", y="<<(tpos[k].y=M.getY())<<"\n窗口 "<<k<<" 设置成功\n";
-	}	
-	
-	void updatePos(bool force_new=false){
-		int size=window_count;
-		ifstream in("window.txt");
-		if(force_new||(!in.is_open())){
-			if(!force_new)cout<<"找不到窗口位置配置或者读取失败，请重新录入\n";
-			for(int i=1;i<=size;i++)getPos(i);
-			cout<<"录入成功\n";
-			ofstream out("window.txt");
-			if(out.is_open()){
-				for(int i=1;i<=size;i++){
-					out<<wpos[i].x<<" "<<wpos[i].y<<" "<<tpos[i].x<<" "<<tpos[i].y<<"\n";
-				}
-				cout<<"保存成功\n"; 
-			}else cout<<"ERROR:保存失败\n";
-		}
-		else{
-			for(int i=1;i<=size;i++){
-				in>>wpos[i].x>>wpos[i].y>>tpos[i].x>>tpos[i].y;
-			}
-			cout<<"窗口位置读取成功\n"; 
-		}
+		cout<<"窗口位置读取成功\n";
 	}
-	
-	int C=0;//current
-	//int N=1000;//size of group
-	string t_name/*[8005]*/;
-	char buf[10005];
-	
-	string prefix,suffix,team_name;
-	
-	void getName(){
-		memset(buf,0,sizeof(buf));
-		/*
-		for(int i=1;i<=N;i++){
-			t_name[i]=prefix;
-			t_name[i]+=itoa(C,buf,10);
-			
-			t_name[i]+="@";
-			t_name[i]+=suffix;
-			t_name[i]+=team_name;
-			//cout<<name[i]<<"\n";
-		}*/
-		t_name=prefix;
-		if(C)t_name+=itoa(C,buf,10);
-		t_name+="???";
-		t_name+=suffix;
-		t_name+="@";
-		t_name+=team_name;
-		C++;
-		/*
-		int p=0;
-		for(int i=1;i<=N;i++){
-			for(int j=0;j<t_name[i].size();j++){
-				buf[p]=t_name[i][j];
-				p++;
-			}
-			buf[p]='\n';
-			p++;
-		}
-		*/
-		memset(buf,0,sizeof(buf));
-		for(int i=0;i<t_name.size();i++){
-			buf[i]=t_name[i];
-		}
-		//return t_name.size();
+}
+///////////////////////////////to
+char buf[100005];
+
+void getClipboard() {
+	clr(buf);
+	if(!IsClipboardFormatAvailable(CF_TEXT)) {
+		cout<<"ERROR:剪贴板数据格式不是CF_TEXT，这可能是对win10的兼容问题，如果出现，请立即联系作者修复\n";
+		return;
 	}
-	
-	void getClipboard(){
-		memset(buf,0,sizeof(buf));
-		if(!IsClipboardFormatAvailable(CF_TEXT)){
-			cout<<"ERROR:剪贴板数据格式不是CF_TEXT，这可能是对win10的兼容问题，如果出现，请立即联系作者修复\n";
-			return;
-		}
-		if(OpenClipboard(NULL)){
-			//cout<<1<<"\n";
-			//Sleep(2000);
-			HGLOBAL hmem=GetClipboardData(CF_TEXT);
-			if(hmem!=NULL){
-				char *pmem=GlobalLock(hmem);
-				memcpy(buf,pmem,strlen(pmem));
-				GlobalUnlock(hmem);
-			}
-			else cout<<"ERROR:剪贴板为空";
-			CloseClipboard();
-		}
-		else cout<<"ERROR:打开剪贴板出错";
-	}
-	
-	void setClipboard(int size){
-		if(OpenClipboard(NULL)){
-			EmptyClipboard();
-			HGLOBAL hmem=GlobalAlloc(GHND,size);
+	if(OpenClipboard(NULL)) {
+		//cout<<1<<"\n";
+		//Sleep(2000);
+		HGLOBAL hmem=GetClipboardData(CF_TEXT);
+		if(hmem!=NULL) {
 			char *pmem=GlobalLock(hmem);
-			memcpy(pmem,buf,size);
+			memcpy(buf,pmem,strlen(pmem));
 			GlobalUnlock(hmem);
-			SetClipboardData(CF_TEXT,hmem);
-			CloseClipboard();
-		}
-		else cout<<"ERROR:打开剪贴板出错";
-	}
-	void copyName(){
-		getName();
-		ansi2Utf8(buf);
-		setClipboard(strlen(buf)+1);
-	} 
-	
-	void getFocus(POINT p){
-		M.setPos(p);
-		M.leftClick();
-		Sleep(100);
-	}
-	
-	void getClipInfo(int i){
-		getFocus(tpos[i]);
-		K.pressKeyCombo({"Ctrl","A"});
-		K.pressKeyCombo({"Ctrl","C"});
-		K.pressKeyCombo({"Ctrl","C"});
-		K.pressKeyCombo({"Ctrl","C"});
-		K.pressKeyCombo({"Ctrl","C"});
-		Sleep(100);
-		getClipboard();
-	}	
-	
-	int threshold_score=5500;
-	int threshold_level=1;
-	double threshold_skill[35];
-	vector<Name> stk,bpk;
-	Name cur_name[10];
-	
-	void Test(int k,int mode){
-		getFocus(wpos[k]);
+		} else cout<<"剪贴板为空";
+		CloseClipboard();
+	} else cout<<"ERROR:打开剪贴板失败";
+}
+void setClipboard(int size) {
+	size++; 
+	if(OpenClipboard(NULL)) {
+		EmptyClipboard();
+		HGLOBAL hmem=GlobalAlloc(GHND,size);
+		char *pmem=GlobalLock(hmem);
+		memcpy(pmem,buf,size);
+		GlobalUnlock(hmem);
+		SetClipboardData(CF_TEXT,hmem);
+		CloseClipboard();
+	} else cout<<"ERROR:打开剪贴板失败";
+}
+void copyName(string s) {
+	clr(buf);
+	for(int i=0;i<s.size();i++)buf[i]=s[i];
+	ansi2Utf8(buf);
+	setClipboard(strlen(buf)+1);
+}
+void getFocus(POINT p) {
+	M.setPos(p);
+	M.leftClick();
+	Sleep(100);
+}
+void getClipInfo(POINT p) {
+	getFocus(p);
+	K.pressKeyCombo({"Ctrl","A"});
+	K.pressKeyCombo({"Ctrl","C"});
+	K.pressKeyCombo({"Ctrl","C"});
+	K.pressKeyCombo({"Ctrl","C"});
+	Sleep(100);
+	getClipboard();
+}
+
+int is_testing[10]={0},test_num=0;
+detail cur_detail[10];
+vector<detail> stk,bpk;
+
+void Test(int k) {
+	getFocus(wpos[k]);
+	K.pressKeyCombo({"Alt","2"});
+	getClipInfo(wpos[k]);
+	Sleep(300);
+	getClipboard();
+	while(!strstr(buf,"名字竞技场")) {
 		getFocus(wpos[k]);
 		K.pressKeyCombo({"Alt","2"});
-		K.pressKeyCombo({"Alt","2"});
-		getFocus(wpos[k]);
-		getFocus(wpos[k]);
-		K.pressKeyCombo({"Ctrl","A"});
-		K.pressKeyCombo({"Ctrl","C"});
-		K.pressKeyCombo({"Ctrl","C"});
-		K.pressKeyCombo({"Ctrl","C"});
-		K.pressKeyCombo({"Ctrl","C"});
-		Sleep(500);
+		getClipInfo(wpos[k]);
+		Sleep(300);
 		getClipboard();
-		while(strstr(buf,"z")){
-			getFocus(wpos[k]);
-			getFocus(wpos[k]);
-			K.pressKeyCombo({"Alt","2"});
-			K.pressKeyCombo({"Alt","2"});
-			getFocus(wpos[k]);
-			getFocus(wpos[k]);
-			K.pressKeyCombo({"Ctrl","A"});
-			K.pressKeyCombo({"Ctrl","C"});
-			K.pressKeyCombo({"Ctrl","C"});
-			K.pressKeyCombo({"Ctrl","C"});
-			K.pressKeyCombo({"Ctrl","C"});
-			Sleep(500);
-			getClipboard();
-		}
-		
-		getFocus(tpos[k]);
-		getFocus(tpos[k]);
-		
-		if(mode==2){
-			memset(buf,0,sizeof(buf));
-			for(int i=0;i<cur_name[k].name.size();i++)buf[i]=cur_name[k].name[i];
-			setClipboard(strlen(buf)+1);
-		}
-		else{
-			copyName();
-		}
-		
-		getFocus(tpos[k]);
-		
-		K.pressKeyCombo({"Ctrl","A"});
-		
-		K.pressKeyCombo({"Shift","1"});
-		K.pressKey({"T","E","S","T"});
-		K.pressKeyCombo({"Shift","1"});
-		K.pressKey({"Enter","Enter"});
-		
-		K.pressKeyCombo({"Ctrl","V"});
-		K.pressKeyCombo({"Alt","1"});
 	}
+	getFocus(tpos[k]);
 	
-	void Read(int k){
-		getClipInfo(k);
-		ofstream out("tmp.txt");
-		if(!out.is_open()){cout<<"ERROR:打开临时文件错误\n";return;}
-		out<<buf;out.close();
-		ifstream in("tmp.txt");
-		if(!in.is_open()){cout<<"ERROR:打开临时文件错误\n";return;}
-		string s;
-		if(phase[k]==1){
-			in>>s;
-			while(1){
-				while(s!="x")in>>s;
-				in>>cur_name[k].name;
-				if(cur_name[k].name=="y")break;
-				for(int i=0;i<8;i++)in>>cur_name[k].detail[i];
-				if(cur_name[k].getLevel()>=threshold_level)stk.push_back(Name(cur_name[k]));
+	copyName(cur_detail[k].name);
+	//cout<<cur_detail[k].name;
+
+	K.pressKeyCombo({"Ctrl","A"});
+
+	K.pressKeyCombo({"Shift","1"});
+	K.pressKey({"T","E","S","T"});
+	K.pressKeyCombo({"Shift","1"});
+	K.pressKey({"Enter","Enter"});
+
+	K.pressKeyCombo({"Ctrl","V"});
+	K.pressKeyCombo({"Alt","1"});
+}
+void getDetail(int k) {
+	getClipInfo(tpos[k]);
+	ofstream out("tmp.txt");if(!out.is_open()){cout<<"ERROR:打开临时文件错误\n";return;}out<<buf;out.close();
+	ifstream in("tmp.txt");if(!in.is_open()){cout<<"ERROR:打开临时文件错误\n";return;}
+	string s;
+	in>>s;
+	for(int i=2;i<=9;i++)in>>cur_detail[k][i];
+	cur_detail[k].getEight();
+	while(s!="实力评分")in>>s;
+	in>>cur_detail[k][0];
+	while(1) {
+		in>>s;
+		if(s=="实力评估11%")break;
+		for(int i=10;i<=44;i++) {
+			if(s==code_detail[i]||s==code_detail_2[i]) {//cout<<s<<"\n";
 				in>>s;
+				in>>cur_detail[k][i];
+				//if(cur_name[k].skill[i]>=threshold_skill[i])retain=true;
 			}
-			phase[k]=2;
-			cur_name[k].name=stk.back().name;
-			for(int i=0;i<8;i++)cur_name[k].detail[i]=stk.back().detail[i];
-			stk.pop_back();
-			Test(k,2);
 		}
-		else if(phase[k]==2){
-			bool retain=false;
-			in>>s;
-			while(s!="实力评分")in>>s;
-			in>>cur_name[k].score;
-			if(cur_name[k].score>=threshold_score)retain=true;
-			while(1){
-				in>>s;
-				if(s=="实力评估11%")break;
-				for(int i=0;i<35;i++){
-					if(s==code_skill[i]){
-						in>>s;in>>s;
-						in>>cur_name[k].skill[i];
-						//if(cur_name[k].skill[i]>=threshold_skill[i])retain=true;
-					}
-				}
-			}
-			if(retain==true)bpk.push_back(Name(cur_name[k]));
-			if(!stk.empty()){
-				cur_name[k].name=stk.back().name;
-				for(int i=0;i<8;i++)cur_name[k].detail[i]=stk.back().detail[i];
-				stk.pop_back();
-				Test(k,2);
+	}
+	int retain=1;
+	for(int i=0;i<bpk.size();i++)if(cur_detail[k].name==bpk[i].name)retain=0;
+	if(retain)bpk.push_back(cur_detail[k]);
+}
+
+bool Reload(int k){
+	if(stk.empty())return false;
+	string s=stk.back().name;
+	int retain=1;
+	for(int i=0;i<bpk.size();i++)if(s==bpk[i].name)retain=0;
+	while(!retain){
+		stk.pop_back();
+		if(stk.empty())return false;
+		s=stk.back().name;
+		retain=1;
+		for(int i=0;i<bpk.size();i++)if(s==bpk[i].name)retain=0;
+	}
+	cur_detail[k]=stk.back();
+	stk.pop_back();
+	return true;
+}
+
+void Start() {
+	clr(is_testing); 
+	test_num=0;
+	cout<<"测号开始，按[Q]键停止\n";
+	ll ms=0;
+	int i=1;
+	while(1) {
+		if(ms%4000==0) {
+			if(!is_testing[i]){
+				if(!Reload(i)&&test_num==0){cout<<"测号完成\n";return;}
+				Test(i);
+				is_testing[i]=1;
+				test_num++;
 			}
 			else{
-				phase[k]=1;
-				Test(k,1);
-			}
-		}
-	}
-	
-	void Print(int by){
-		if(by==0){
-			sort(bpk.begin(),bpk.end(),cmpByScore);
-		}
-		if(by==1){
-			sort(bpk.begin(),bpk.end(),cmpByEight);
-		}
-		if(by==2){
-			sort(bpk.begin(),bpk.end(),cmpByHiSkill);
-		}
-		ofstream out("res.txt");
-		for(int i=0;i<bpk.size();i++){
-			cout<<bpk[i].name<<" 粗评:"<<bpk[i].score<<" 概率最高的技能:"<<bpk[i].hiSkillName()<<","<<bpk[i].hiSkill()<<"%\n";
-			out<<bpk[i].name<<" 粗评:"<<bpk[i].score<<" 概率最高的技能:"<<bpk[i].hiSkillName()<<","<<bpk[i].hiSkill()<<"%\n";
-		}
-	}
-	
-	void Start(){
-		cout<<"测号开始\n";
-		ll ms=0;
-		int i=1;
-		while(1){
-			if(ms%2000==0){
-				if(phase[i]==0){
-					phase[i]=1;
-					Test(i,1);
+				getClipInfo(tpos[i]);
+				if(!strstr(buf,"x")){
+					//if(!Reload()){cout<<"测号结束\n";return;}
+					Test(i);
 				}
-				else if(phase[i]==1){
-					getClipInfo(i);
-					if(strstr(buf,"y"))Read(i);
-					
-				}
-				else{
-					getClipInfo(i);
-					if(strstr(buf,"实力评估11%"))Read(i);
-				}
-				i++;
-				if(i>window_count)i=1;
+				else if(strstr(buf,"实力评估11%"))getDetail(i),is_testing[i]=0,test_num--;
 			}
-			if(KEY_DOWN(VK_SPACE)){
-				while(KEY_DOWN(VK_SPACE))Sleep(10);
-				cout<<"测号结束\n";
-				break;
-			}
-			if(KEY_DOWN('Q')){
-				while(KEY_DOWN('Q'))Sleep(10);
-				Print(0);
-			}
-			if(KEY_DOWN('W')){
-				while(KEY_DOWN('W'))Sleep(10);
-				Print(1);
-			}
-			if(KEY_DOWN('E')){
-				while(KEY_DOWN('E'))Sleep(10);
-				Print(2);
-			}
-			Sleep(10);
-			ms+=10;
+			i++;
+			if(i>4)i=1;
 		}
+		if(KEY_DOWN('Q')) {
+			while(KEY_DOWN('Q'))Sleep(10);
+			cout<<"测号停止\n";
+			return;
+		}
+		/*
+		if(KEY_DOWN('Q')) {
+			while(KEY_DOWN('Q'))Sleep(10);
+			Print(0);
+		}
+		if(KEY_DOWN('W')) {
+			while(KEY_DOWN('W'))Sleep(10);
+			Print(1);
+		}
+		if(KEY_DOWN('E')) {
+			while(KEY_DOWN('E'))Sleep(10);
+			Print(2);
+		}*/
+		Sleep(10);
+		ms+=10;
 	}
-	
+}
+
+int sort_by;
+
+int cmp(detail x,detail y){
+	return x[sort_by]>y[sort_by];
+}
+
+void Print(){
+	for(int i=0;i<=44;i++){
+		cout<<setw(8)<<code_detail[i]<<":"<<i<<" ";
+		if(i%3==2)cout<<"\n";
+	}
+	cout<<"\n请输入排序关键字的编号，输入完以后按Enter:";
+	cin>>sort_by;
+	sort(bpk.begin(),bpk.end(),cmp);
+	for(int i=0;i<min(20,int(bpk.size()));i++){
+		cout<<"#"<<i+1<<": "<<bpk[i].name<<" 粗评:"<<bpk[i][0]<<" "<<code_detail[sort_by]<<":"<<bpk[i][sort_by]; 
+		if(sort_by>=10&sort_by<=44)cout<<"%\n";else cout<<"\n";
+	}
+}
+
+void readName(){
+	ifstream in("name.txt");
+	if(!in.is_open()){
+		cout<<"ERROR:打开名字列表失败";
+		return; 
+	}
+	string s;
+	while(in>>s){
+		stk.push_back(detail());
+		stk[stk.size()-1].name=s;
+	}
+}
 
 /*
-	//虚拟键表 
+	//虚拟键表
 	VK_LBUTTON        0x01	//鼠标左键
 	VK_RBUTTON        0x02	//鼠标右键
 	VK_CANCEL         0x03	//Ctrl + Break
@@ -612,24 +515,24 @@ int cmpByHiSkill(Name x,Name y){
 	VK_NEXT           0x22	//Page Down
 	VK_END            0x23	//End
 	VK_HOME           0x24	//Home
-	
+
 	//方向键
-	VK_LEFT           0x25	//方向键左 
-	VK_UP             0x26	//方向键上 
-	VK_RIGHT          0x27	//方向键右 
-	VK_DOWN           0x28	//方向键下 
-	
+	VK_LEFT           0x25	//方向键左
+	VK_UP             0x26	//方向键上
+	VK_RIGHT          0x27	//方向键右
+	VK_DOWN           0x28	//方向键下
+
 	VK_SNAPSHOT       0x2C	//Print Screen
 	VK_INSERT         0x2D	//Insert
 	VK_DELETE         0x2E	//Delete
-	
+
 	//数字和字母(0到9和A到Z)的虚拟键码是ASCII码
-	
-	VK_LWIN           0x5B	//左Windows徽标键(104键盘才有) 
+
+	VK_LWIN           0x5B	//左Windows徽标键(104键盘才有)
 	VK_RWIN           0x5C	//右Windows徽标键(104键盘才有)
 	VK_APPS           0x5D	//AppsKey(104键盘才有)
-	
-	//小键盘 
+
+	//小键盘
 	VK_NUMPAD0        0x60	//小键盘0
 	VK_NUMPAD1        0x61	//小键盘1
 	VK_NUMPAD2        0x62	//小键盘2
@@ -646,9 +549,9 @@ int cmpByHiSkill(Name x,Name y){
 	VK_SUBTRACT       0x6D	//小键盘-
 	VK_DECIMAL        0x6E	//小键盘.
 	VK_DIVIDE         0x6F	//小键盘/
-	
+
 	//功能键F1-F24
-	VK_F1             0x70 
+	VK_F1             0x70
 	VK_F2             0x71
 	VK_F3             0x72
 	VK_F4             0x73
@@ -672,10 +575,10 @@ int cmpByHiSkill(Name x,Name y){
 	VK_F22            0x85
 	VK_F23            0x86
 	VK_F24            0x87
-	
+
 	VK_NUMLOCK        0x90	//Num Lock 键
-	VK_SCROLL         0x91	//Scroll Lock 键 
-	
+	VK_SCROLL         0x91	//Scroll Lock 键
+
 	VK_LSHIFT         0xA0	//左Shift
 	VK_RSHIFT         0xA1	//右Shift
 	VK_LCONTROL       0xA2	//左Ctrl
