@@ -380,9 +380,8 @@ void getDetail(int k) {
 	cur_detail[k].getEight();
 	while(s!="实力评分")in>>s;
 	in>>cur_detail[k][0];
-	while(1) {
-		in>>s;
-		if(s=="实力评估11%")break;
+	while(in>>s) {
+		//if(s=="实力评估11%")break;
 		for(int i=10;i<=44;i++) {
 			if(s==code_detail[i]||s==code_detail_2[i]) {//cout<<s<<"\n";
 				in>>s;
@@ -422,10 +421,14 @@ void Start() {
 	while(1) {
 		if(ms%4000==0) {
 			if(!is_testing[i]){
-				if(!Reload(i)&&test_num==0){cout<<"测号完成\n";return;}
-				Test(i);
-				is_testing[i]=1;
-				test_num++;
+				if(!Reload(i)){
+					if(test_num==0){cout<<"测号完成\n";return;}
+				}
+				else{
+					Test(i);
+					is_testing[i]=1;
+					test_num++;
+				}
 			}
 			else{
 				getClipInfo(tpos[i]);
