@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style type="text/css">
+html {
+ width:100%;
+ height:100%;
+}
+body {
+ margin: 0;
+ font-size: 15px;
+ width:100%;
+ height:100%;
+ font-family: "Microsoft YaHei", Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
+}
+textarea{
+min-height: 150px;
+width: 75%;
+}
+</style>
+
+<script>
+function get(){
+document.querySelector("textarea").value="var pre=\""+document.querySelector(".pre").value+"\";var team=\""+document.querySelector(".team").value+"\";var low="+document.querySelector(".low").value+';var cur=0;function chk(){if(cw().document.querySelectorAll("span.u").length>=2){if(low<=1){var a=cw().document.querySelectorAll(".s_elite1");var n=a.length;var names="";for(var i=0;i<n;i++){names+=a[i].parentElement.previousElementSibling.textContent;}console.log("1级号:");console.log(names);}if(low<=2){var a=cw().document.querySelectorAll(".s_elite2");var n=a.length;var names="";for(var i=0;i<n;i++){names+=a[i].parentElement.previousElementSibling.textContent;}console.log("2级号:");console.log(names);}if(low<=3){var a=cw().document.querySelectorAll(".s_elite3");var n=a.length;var names="";for(var i=0;i<n;i++){names+=a[i].parentElement.previousElementSibling.textContent;}console.log("3级号:");console.log(names);}var input=pre+cur+"???@"+team;document.querySelector("#textdiv>textarea").value="!test!\\n\\n"+input;document.querySelector(".goBtn").click();cur++;}else{console.log("测号中......");}}document.querySelector("#textdiv>textarea").value="!test!\\n\\n"+pre+cur+"???@"+team;document.querySelector(".goBtn").click();cur++;var si=setInterval(function(){chk()},2000);'
+}
+</script>
+</head>
+
+<body>
+<h2>数字测号脚本</h2>
+<p>输入系列（比如剑圣xxxxxxxx@云剑中的“剑圣”）：<input type="text" class="pre"></p>
+<p>输入战队名：<input type="text" class="team"></p>
+<p>输入最低的测号等级(1-3)：<input type="text" class="low"></p>
+<button onclick="get()">生成脚本</button>
+<br>
+
+<textarea class="res" placeholder="脚本代码将会生成在这里"></textarea>
+
+<h3>如何使用？</h3>
+<p>1.打开名字竞技场</p>
+<p>2.按F12，此时你窗口的右面或下面会出现一个框，点击那个框上面的Console</p>
+<p>3.有一个">"形状的图标，点击它右面的空白处，粘贴生成的脚本，按Enter</p>
+</body>
+</html>
